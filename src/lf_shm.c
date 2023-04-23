@@ -8,8 +8,10 @@ bool lf_shm_create(const char *name, size_t size)
 {
   int shm_fd = shm_open(name, O_CREAT|O_RDWR, 0644);
   if (shm_fd < 0) return false;
-  ftruncate(shm_fd, 0);
-  ftruncate(shm_fd, size);
+  int ret = ftruncate(shm_fd, 0);
+  (void)ret;
+  ret = ftruncate(shm_fd, size);
+  (void)ret;
   close(shm_fd);
 
   return true;
@@ -26,11 +28,17 @@ void * lf_shm_open(const char *name, size_t * _opt_size)
   if (shm_fd < 0) return NULL;
 
   struct stat st[1];
-  if (0 != fstat(shm_fd, st)) return NULL;
+  if (0 != fstat(shm_fd, st)) {
+      close(shm_fd);
+      return NULL;
+  }
   size_t size = st->st_size;
 
   void *mem = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_SHARED, shm_fd, 0);
-  if (mem == MAP_FAILED) return NULL;
+  if (mem == MAP_FAILED) {
+      close(shm_fd);
+      return NULL;
+  }
 
   close(shm_fd);
   if (_opt_size) *_opt_size = size;

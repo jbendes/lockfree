@@ -4,12 +4,12 @@ project('lockfree', 'c')
 ## Common flags
 
 flags_c = [
-  '-std=c11',
+  '-Dc_std=c89'
   #'-fvisibility=hidden',
 ]
 
 flags_cpp = [
-  '-std=c++14',
+  '-Dcpp_std=c++11',
   '-fno-exceptions', '-fno-rtti',
   #'-fvisibility=hidden', '-fvisibility-inlines-hidden',
 ]
@@ -19,14 +19,15 @@ flags_common = [
   '-D_GNU_SOURCE',
   '-Dtypeof=__typeof__',
   '-I' + meson.source_root() + '/src',
-  '-g', '-fPIC',
+  '-Dbuildtype=debug', '-fPIC',
   '-ffast-math', '-fno-associative-math', '-fno-reciprocal-math',
   '-fno-strict-aliasing',
+  '-march=native',
 ]
 
 flags_warn = [
   ## Warning enables
-  '-Wall', '-Werror', '-Wextra',
+  '-Dwarning_level=everything',
 
   ## Warning disables: annoying
   '-Wno-unused-function', '-Wno-unused-parameter',
@@ -43,7 +44,7 @@ flags_warn = [
 
 flags_release = [
   ## Optimization
-  '-O2',
+  '-Doptimization=2',
 
   ## Warning disables:
   '-Wno-unused-variable', '-Wno-unused-but-set-variable',
